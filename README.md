@@ -1,4 +1,4 @@
-# Hellnet Schema
+# hellnet-schemas
 
 Centralized event-contract repository and Schema Registry automation for event-driven services.
 
@@ -6,6 +6,10 @@ Centralized event-contract repository and Schema Registry automation for event-d
 Issue → generated PR → validation + review → main → immutable schema tag
                                                     └─ explicit Registry registration
 ```
+
+[![pr-check](https://github.com/guilhermelinosp/hellnet-schemas/actions/workflows/pr-check.yml/badge.svg)](https://github.com/guilhermelinosp/hellnet-schemas/actions/workflows/pr-check.yml)
+[![tag-schema](https://github.com/guilhermelinosp/hellnet-schemas/actions/workflows/tag-schema.yml/badge.svg)](https://github.com/guilhermelinosp/hellnet-schemas/actions/workflows/tag-schema.yml)
+[![CodeQL](https://github.com/guilhermelinosp/hellnet-schemas/actions/workflows/codeql.yml/badge.svg)](https://github.com/guilhermelinosp/hellnet-schemas/actions/workflows/codeql.yml)
 
 ## How it works
 
@@ -25,7 +29,7 @@ Dev ──abre issue──► Issue Template ──Issue event──► Gera sch
 6. Ao merge na `main`, `tag-schema.yml` cria a tag imutável `schema/{nome}/v{versao}`
 7. A sincronização com um Schema Registry é feita separadamente, pelo processo de registro correspondente
 
-## Quick Start
+## Quick start
 
 ### Creating a new schema
 
@@ -89,6 +93,28 @@ Only Avro contracts are accepted. Every contract uses the Fast hierarchy above.
 |--------|--------|------|
 | Ride Completed | Avro (Fast) | `schemas/avro/fast/ride/completed/v1/schema.avsc` |
 
+## Configuration
+
+No GitHub App settings are required. No Registry credentials are needed for
+generation, tests or CI. Manual Apicurio operations accept
+`--registry "$APICURIO_URL"` and optional `APICURIO_TOKEN` in the local environment.
+
+### Compatibility levels
+
+| Level | Description |
+|-------|-------------|
+| `BACKWARD` | New schema can read data written with the previous |
+| `FORWARD` | Old schema can read data written with the new |
+| `FULL` | Both backward and forward compatible |
+| `NONE` | No compatibility checks |
+
+Published `vN` directories are append-only and cannot be edited or deleted. Create
+the next version instead. Fast Avro versions intentionally have different subjects,
+topics and record fullnames: `v2` is a **new contract identity**, not a promise that a
+v1 consumer can read v2 events. Its metadata compatibility mode applies inside the
+new Registry subject. Other contracts are compared with their previous directory
+version. See [the evolution policy and validator limits](CONTRIBUTING.md#evolution-policy).
+
 ## Schema naming convention
 
 Fast Avro contracts follow one canonical mapping:
@@ -129,44 +155,14 @@ schema/fast-ride-completed/v1
 schema/fast-driver-location-updated/v1
 ```
 
-## CI/CD Pipeline
+## Related repos
 
-| Workflow | Trigger | Action |
-|----------|---------|--------|
-| `issue-schema.yml` | Issue opened/labeled `schema`; manual retry by Issue number | Validates input, generates a schema branch and reuses an existing PR on retries |
-| `validate-pr.yml` | PR changing contracts/tooling; reusable call | Runs regression tests, real format validators, append-only history and compatibility gates |
-| `codeql.yml` | Push to `main`, PR or manual run | Analyzes GitHub Actions workflows |
-| `security.yml` | PR or manual run | Runs Gitleaks and Trivy security scans |
-| `tag-schema.yml` | Schema changes merged to `main` | Creates missing immutable schema tags |
+| Repo | Purpose |
+|------|---------|
+| `hellnet-lib-kafka` | Kafka pub/sub library (consumes schemas) |
+| `hellnet-lib-telemetry` | OpenTelemetry + logging |
 
-This repository contains Avro contracts and focused Python tooling with shell entry points.
-CI does not install Go or run Go builds, tests, vet, GoSec or govulncheck.
-All workflows use the standard `GITHUB_TOKEN` with job-scoped permissions. There is
-no GitHub App, private key or external automation dependency in this repository.
-
-## Configuration
-
-No GitHub App settings are required. No Registry credentials are needed for
-generation, tests or CI. Manual Apicurio operations accept
-`--registry "$APICURIO_URL"` and optional `APICURIO_TOKEN` in the local environment.
-
-### Compatibility levels
-
-| Level | Description |
-|-------|-------------|
-| `BACKWARD` | New schema can read data written with the previous |
-| `FORWARD` | Old schema can read data written with the new |
-| `FULL` | Both backward and forward compatible |
-| `NONE` | No compatibility checks |
-
-Published `vN` directories are append-only and cannot be edited or deleted. Create
-the next version instead. Fast Avro versions intentionally have different subjects,
-topics and record fullnames: `v2` is a **new contract identity**, not a promise that a
-v1 consumer can read v2 events. Its metadata compatibility mode applies inside the
-new Registry subject. Other contracts are compared with their previous directory
-version. See [the evolution policy and validator limits](CONTRIBUTING.md#evolution-policy).
-
-## Local development
+## Development
 
 ### Validate schemas locally
 
@@ -239,9 +235,21 @@ subject lets the registry deduplicate it. Schema Registry synchronization is
 separate from publishing events; applications publish real payloads later using
 the registered contracts.
 
-## Related repos
+## CI/CD
 
-| Repo | Purpose |
-|------|---------|
-| `hellnet-dep-kafka` | Kafka pub/sub library (consumes schemas) |
-| `hellnet-dep-observability` | OpenTelemetry + logging |
+| Workflow | Trigger | Action |
+|----------|---------|--------|
+| `issue-schema.yml` | Issue opened/labeled `schema`; manual retry by Issue number | Validates input, generates a schema branch and reuses an existing PR on retries |
+| `validate-pr.yml` | PR changing contracts/tooling; reusable call | Runs regression tests, real format validators, append-only history and compatibility gates |
+| `codeql.yml` | Push to `main`, PR or manual run | Analyzes GitHub Actions workflows |
+| `security.yml` | PR or manual run | Runs Gitleaks and Trivy security scans |
+| `tag-schema.yml` | Schema changes merged to `main` | Creates missing immutable schema tags |
+
+This repository contains Avro contracts and focused Python tooling with shell entry points.
+CI does not install Go or run Go builds, tests, vet, GoSec or govulncheck.
+All workflows use the standard `GITHUB_TOKEN` with job-scoped permissions. There is
+no GitHub App, private key or external automation dependency in this repository.
+
+## Contributing and license
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Licensed under [Apache 2.0](LICENSE).
