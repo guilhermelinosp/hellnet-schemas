@@ -1,13 +1,13 @@
 {
-  "namespace": "br.com.hellnet.fast.events.ride.v1",
+  "namespace": "br.com.hellnet.fast.events.order.v1",
   "type": "record",
-  "name": "FastRideRequestedV1",
-  "doc": "Published when a ride is requested in Fast.",
+  "name": "FastOrderRequestedV1",
+  "doc": "Published when an order is requested in Fast.",
   "fields": [
     { "name": "eventId", "type": "string" },
     { "name": "eventVersion", "type": "int", "default": 1 },
     { "name": "occurredAt", "type": "long" },
-    { "name": "rideId", "type": "string" },
+    { "name": "orderId", "type": "string" },
     { "name": "riderId", "type": "string" },
     { "name": "pickupLatitude", "type": "double" },
     { "name": "pickupLongitude", "type": "double" },

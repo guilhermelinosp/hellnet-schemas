@@ -10,6 +10,11 @@ from avro.compatibility import ReaderWriterCompatibilityChecker, SchemaCompatibi
 from contracts import confined_path, require, validate_contract, validate_tree
 
 
+# One-time domain rename (2026-10): the ride v1 contracts had no consumers and became order v1 (matches the existing
+# br.com.hellnet.fast.order.* topics). Limited to these exact removed directories; inert once merged.
+RETIRED_RIDE_V1 = {Path("schemas/avro/fast/ride") / event / "v1" for event in ("requested", "accepted", "cancelled", "completed")}
+
+
 def protect_history(repo, base):
     repo = Path(repo)
     if not re.fullmatch(r"(?:[0-9a-fA-F]{40}|main|origin/main)", base):
@@ -24,6 +29,7 @@ def protect_history(repo, base):
         # removed by the Avro-only migration. All Avro history remains immutable.
         if len(relative.parts) > 1 and relative.parts[1] in {"json", "protobuf"}:
             continue
+        if relative.parent in RETIRED_RIDE_V1: continue
         published.add(relative.parent); current = repo / relative
         expected = subprocess.check_output(["git", "cat-file", "blob", blob], cwd=repo)
         require(mode in {"100644", "100755"} and current.is_file() and not current.is_symlink() and current.read_bytes() == expected, f"published file is immutable: {relative}")
