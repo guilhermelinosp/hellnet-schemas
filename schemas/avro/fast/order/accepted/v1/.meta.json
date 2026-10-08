@@ -2,6 +2,6 @@
   "name": "fast.order.accepted.v1",
   "type": "avro",
   "version": 1,
-  "compatibility": "NONE",
+  "compatibility": "BACKWARD",
   "createdAt": "2026-09-12T00:00:00Z"
 }
