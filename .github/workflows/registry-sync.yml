@@ -1,0 +1,59 @@
+name: registry-sync
+
+# Reusable: joins the private tailnet (no public endpoint) and talks to the Redpanda Schema Registry.
+#   mode=check -> read-only compatibility test (pull requests)
+#   mode=apply -> sets compatibility and registers schemas (merge to main)
+on:
+  workflow_call:
+    inputs:
+      mode:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY_HOST: schema.hellnet.com.br
+  REGISTRY_IP: 192.168.1.2
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/setup-schema-tools
+
+      - name: Check credentials
+        id: creds
+        env:
+          CLIENT_ID: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+        run: |
+          if [ -z "$CLIENT_ID" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            if [ "${{ inputs.mode }}" = apply ]; then
+              echo "::error::TS_OAUTH_CLIENT_ID / TS_OAUTH_SECRET are not configured; the Registry was NOT synced"
+              exit 1
+            fi
+            echo "::notice::No Tailscale credentials in this context (fork or Dependabot); Registry check skipped"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Join the tailnet
+        if: steps.creds.outputs.present == 'true'
+        uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd # v4.2.0
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Resolve the Registry over the tailnet
+        if: steps.creds.outputs.present == 'true'
+        run: echo "$REGISTRY_IP $REGISTRY_HOST" | sudo tee -a /etc/hosts >/dev/null
+
+      - name: ${{ inputs.mode }} schemas against Redpanda
+        if: steps.creds.outputs.present == 'true'
+        run: python3 scripts/redpanda_registry.py "${{ inputs.mode }}" --registry "https://$REGISTRY_HOST"

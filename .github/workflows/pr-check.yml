@@ -23,9 +23,15 @@ jobs:
   policy:
     uses: guilhermelinosp/templates/.github/workflows/pr-policy.yml@ad5e76e437be0eb61d08d4ca08a5c578869e8474
 
+  registry:
+    uses: ./.github/workflows/registry-sync.yml
+    with:
+      mode: check
+    secrets: inherit
+
   pr-gate:
     if: always()
-    needs: [merge-check, gitleaks, policy]
+    needs: [merge-check, gitleaks, policy, registry]
     runs-on: ubuntu-latest
     steps:
       - name: gate

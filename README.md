@@ -29,6 +29,21 @@ Dev ──abre issue──► Issue Template ──Issue event──► Gera sch
 6. Ao merge na `main`, `tag-schema.yml` cria a tag imutável `schema/{nome}/v{versao}`
 7. A sincronização com um Schema Registry é feita separadamente, pelo processo de registro correspondente
 
+## Redpanda Schema Registry sync
+
+PRs run a read-only compatibility test (`registry` job, part of `pr-gate`); merges to `main` set the subject
+compatibility and register every schema (`sync-registry.yml`). The Registry has no public endpoint: the runner joins
+the private tailnet (subnet router `cluster-lan`, route `192.168.1.2/32`) and reaches `https://schema.hellnet.com.br`.
+
+One-time setup:
+
+1. Tailscale ACL: `tagOwners` for `tag:ci`, and a grant allowing `tag:ci` to reach `192.168.1.2:443`.
+2. Tailscale admin: create an OAuth client with the `auth_keys` write scope for `tag:ci`.
+3. Repository secrets: `TS_OAUTH_CLIENT_ID` and `TS_OAUTH_SECRET`.
+
+Without the secrets, PR checks from forks or Dependabot are skipped and the merge-time sync fails loudly.
+Local run: `python3 scripts/redpanda_registry.py check --registry https://schema.hellnet.com.br`.
+
 ## Quick start
 
 ### Creating a new schema
