@@ -35,13 +35,13 @@ PRs run a read-only compatibility test (`registry` job, part of `pr-gate`); merg
 compatibility and register every schema (`sync-registry.yml`). The Registry has no public endpoint: the runner joins
 the private tailnet (subnet router `cluster-lan`, route `192.168.1.2/32`) and reaches `https://schema.hellnet.com.br`.
 
-One-time setup:
+One-time setup (same federated identity used by the `templates` CD):
 
-1. Tailscale ACL: `tagOwners` for `tag:ci`, and a grant allowing `tag:ci` to reach `192.168.1.2:443`.
-2. Tailscale admin: create an OAuth client with the `auth_keys` write scope for `tag:ci`.
-3. Repository secrets: `TS_OAUTH_CLIENT_ID` and `TS_OAUTH_SECRET`.
+1. Tailscale ACL: grant `tag:github` access to `192.168.1.2:443`.
+2. Tailscale federated credential (`auth_keys`, `tag:github`) whose subject matches this repository.
+3. Repository variables: `TS_CLIENT_ID` and `TS_AUDIENCE` (no secrets; OIDC, no expiry).
 
-Without the secrets, PR checks from forks or Dependabot are skipped and the merge-time sync fails loudly.
+Without the variables, PR checks from forks or Dependabot are skipped and the merge-time sync fails loudly.
 Local run: `python3 scripts/redpanda_registry.py check --registry https://schema.hellnet.com.br`.
 
 ## Quick start

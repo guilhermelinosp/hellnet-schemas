@@ -11,4 +11,4 @@ permissions:
 jobs:
   auto-merge:
     if: github.actor == 'dependabot[bot]' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
-    uses: guilhermelinosp/templates/.github/workflows/dependabot-auto-merge.yml@ad5e76e437be0eb61d08d4ca08a5c578869e8474
+    uses: guilhermelinosp/templates/.github/workflows/dependabot-auto-merge.yml@latest
