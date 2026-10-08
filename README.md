@@ -32,16 +32,10 @@ Dev ──abre issue──► Issue Template ──Issue event──► Gera sch
 ## Redpanda Schema Registry sync
 
 PRs run a read-only compatibility test (`registry` job, part of `pr-gate`); merges to `main` set the subject
-compatibility and register every schema (`sync-registry.yml`). The Registry has no public endpoint: the runner joins
-the private tailnet (subnet router `cluster-lan`, route `192.168.1.2/32`) and reaches `https://schema.hellnet.com.br`.
+compatibility and register every schema (`sync-registry.yml`). Tailscale lives only in `templates`: both workflows call
+`templates/.github/workflows/schema-sync.yml`, which triggers the `schema-registry.yml` hub (OIDC, `tag:github`,
+ACL `192.168.1.2:443`). This repository holds no Tailscale variable or secret.
 
-One-time setup (same federated identity used by the `templates` CD):
-
-1. Tailscale ACL: grant `tag:github` access to `192.168.1.2:443`.
-2. Tailscale federated credential (`auth_keys`, `tag:github`) whose subject matches this repository.
-3. Repository variables: `TS_CLIENT_ID` and `TS_AUDIENCE` (no secrets; OIDC, no expiry).
-
-Without the variables, PR checks from forks or Dependabot are skipped and the merge-time sync fails loudly.
 Local run: `python3 scripts/redpanda_registry.py check --registry https://schema.hellnet.com.br`.
 
 ## Quick start

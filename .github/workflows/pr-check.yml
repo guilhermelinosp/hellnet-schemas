@@ -25,10 +25,9 @@ jobs:
     uses: guilhermelinosp/templates/.github/workflows/pr-policy.yml@latest
 
   registry:
-    uses: ./.github/workflows/registry-sync.yml
+    uses: guilhermelinosp/templates/.github/workflows/schema-sync.yml@latest
     with:
       mode: check
-    secrets: inherit
 
   pr-gate:
     if: always()
