@@ -56,7 +56,7 @@ class RegistryTests(unittest.TestCase):
         self.assertFalse([c for c in Fake.calls if c[0] != "GET"])
 
     def test_check_rejects_incompatible_schema(self):
-        Fake.subjects["br.com.hellnet.fast.order.requested.v1"] = {}
+        Fake.subjects["fast.order.requested.v1"] = {}
         Fake.compatible = False
         with self.assertRaisesRegex(ValueError, "not BACKWARD-compatible"):
             r.sync(self.url, SCHEMAS, apply=False)
@@ -65,7 +65,7 @@ class RegistryTests(unittest.TestCase):
         r.sync(self.url, SCHEMAS, apply=True)
         self.assertEqual(len(Fake.subjects), 4)
         self.assertEqual(set(Fake.configs.values()), {"BACKWARD"})
-        self.assertEqual(Fake.subjects["br.com.hellnet.fast.order.requested.v1"]["schemaType"], "AVRO")
+        self.assertEqual(Fake.subjects["fast.order.requested.v1"]["schemaType"], "AVRO")
 
     def test_rejects_credentials_in_url(self):
         with self.assertRaisesRegex(ValueError, "invalid Registry base URL"):

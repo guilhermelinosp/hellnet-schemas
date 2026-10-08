@@ -1,5 +1,5 @@
 {
-  "namespace": "br.com.hellnet.fast.events.order.v1",
+  "namespace": "fast.events.order.v1",
   "type": "record",
   "name": "FastOrderRequestedV1",
   "doc": "Published when an order is requested in Fast.",

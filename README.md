@@ -131,7 +131,7 @@ Fast Avro contracts follow one canonical mapping:
 Issue schema name: fast-{domain}-{event}
 Repository path:   schemas/avro/fast/{domain}/{event}/v{version}
 Metadata name:     fast.{domain}.{event-as-dots}.v{version}
-Avro namespace:    br.com.hellnet.fast.events.{domain}.v{version}
+Avro namespace:    fast.events.{domain}.v{version}
 Avro record:       Fast{Domain}{Event}V{version}
 ```
 
@@ -140,14 +140,14 @@ Examples:
 ```text
 fast-order-requested
 → schemas/avro/fast/order/requested/v1
-→ br.com.hellnet.fast.order.requested.v1
-→ br.com.hellnet.fast.events.order.v1
+→ fast.order.requested.v1
+→ fast.events.order.v1
 → FastOrderRequestedV1
 
 fast-driver-location-updated
 → schemas/avro/fast/driver/location-updated/v1
 → fast.driver.location.updated.v1
-→ br.com.hellnet.fast.events.driver.v1
+→ fast.events.driver.v1
 → FastDriverLocationUpdatedV1
 ```
 
@@ -193,46 +193,22 @@ Issue retries.
 Registration happens in CI on merge to `main` (`sync-registry.yml`). For a read-only local test against the
 Registry, run `python3 scripts/redpanda_registry.py check --registry https://schema.hellnet.com.br` (needs the tailnet).
 
-### Redpanda Schema Registry
+### Redpanda Schema Registry and topics
 
-The repository contains contracts, not event payloads. This script registers Avro
-schemas only; it never publishes fake messages. Topic creation is opt-in and does
-not publish events.
+The repository contains contracts, not event payloads. Schemas are registered by CI on merge to `main`
+(`sync-registry.yml`); nothing here publishes messages. The `br.com.hellnet.` prefix applies to **topics only**:
+schemas, subjects and Avro namespaces never carry it.
 
-Prerequisites: `python3` and `curl`. `rpk` is optional and is used only with
-`--apply --create-topics`.
-
-```bash
-# Safe default: no network writes (REDPANDA_SCHEMA_REGISTRY_URL defaults to
-# http://localhost:8081; REDPANDA_BROKERS defaults to localhost:9092).
-bash scripts/register-redpanda.sh --dry-run
-
-# Register schemas (does not create topics or publish messages).
-bash scripts/register-redpanda.sh --apply --registry http://localhost:8081
-
-# Register and, only when rpk is installed, create the derived topics.
-bash scripts/register-redpanda.sh --apply --create-topics
-```
-
-The endpoint is the Confluent-compatible Redpanda API:
-`POST /subjects/{subject}/versions`, with content type
-`application/vnd.schemaregistry.v1+json` and a JSON body whose `schema` value is
-the complete Avro document. The stable mapping intentionally keeps subjects and
-topics distinct:
-
-| Schema directory | Subject | Topic |
+| Schema directory | Subject (schema) | Topic |
 |---|---|---|
-| `fast/order/requested/v1` | `br.com.hellnet.fast.order.requested.v1` | `br.com.hellnet.fast.order.requested.v1` |
-| `fast/order/accepted/v1` | `br.com.hellnet.fast.order.accepted.v1` | `br.com.hellnet.fast.order.accepted.v1` |
-| `fast/driver/location-updated/v1` | `fast.driver.location.updated.v1` | `fast.driver.location.updated.v1` |
+| `fast/order/requested/v1` | `fast.order.requested.v1` | `br.com.hellnet.fast.order.requested.v1` |
+| `fast/order/accepted/v1` | `fast.order.accepted.v1` | `br.com.hellnet.fast.order.accepted.v1` |
+| `fast/order/cancelled/v1` | `fast.order.cancelled.v1` | `br.com.hellnet.fast.order.cancelled.v1` |
+| `fast/order/completed/v1` | `fast.order.completed.v1` | `br.com.hellnet.fast.order.completed.v1` |
 
-Fast Avro directories follow `fast/{domain}/{event}/v{version}`. Event names may
-contain additional hyphen-separated words; metadata converts those event segments
-to dots for the stable topic/subject name. A dry-run prints the schema, subject, endpoint, and topic without a
-write. Registration is idempotent: submitting the same schema to the same
-subject lets the registry deduplicate it. Schema Registry synchronization is
-separate from publishing events; applications publish real payloads later using
-the registered contracts.
+Fast Avro directories follow `fast/{domain}/{event}/v{version}`; event segments joined by hyphens become dots in the
+subject. Registration is idempotent: the same schema submitted to the same subject is deduplicated by the registry.
+Topics are created in the cluster (`redpanda-topics.sh`), not by CI.
 
 ## CI/CD
 
