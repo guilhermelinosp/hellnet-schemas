@@ -63,8 +63,7 @@ class RegistryTests(unittest.TestCase):
 
     def test_apply_sets_compatibility_and_registers_every_contract(self):
         r.sync(self.url, SCHEMAS, apply=True)
-        self.assertEqual(len(Fake.subjects), 8)
-        self.assertIn("br.com.hellnet.fast.order.requested.v1-value", Fake.subjects)
+        self.assertEqual(set(Fake.subjects), {f"fast.order.{e}.v1" for e in ("requested", "accepted", "cancelled", "completed")})
         self.assertEqual(set(Fake.configs.values()), {"BACKWARD"})
         self.assertEqual(Fake.subjects["fast.order.requested.v1"]["schemaType"], "AVRO")
 
