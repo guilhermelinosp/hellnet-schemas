@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "schemas/**"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -52,13 +53,15 @@ jobs:
             esac
 
             tag="schema/${schema_key}/v${version}"
-            introduced_commit="$(git log --diff-filter=A --format='%H' -- "$meta" | tail -n 1)"
+            introduced_commit="$(git log --no-renames --diff-filter=A --format='%H' -- "$meta" | tail -n 1)"
             if [ -z "$introduced_commit" ]; then
               echo "ERROR: cannot find introduction commit for $meta" >&2
               exit 1
             fi
 
-            existing="$(gh api "repos/$REPOSITORY/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null || true)"
+            # gh prints the error body on stdout for a 404, so test the exit status instead of the output
+            existing=""
+            if sha="$(gh api "repos/$REPOSITORY/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null)"; then existing="$sha"; fi
             if [ -n "$existing" ]; then
               if [ "$existing" != "$introduced_commit" ]; then
                 echo "ERROR: immutable tag $tag points to $existing, expected $introduced_commit" >&2
