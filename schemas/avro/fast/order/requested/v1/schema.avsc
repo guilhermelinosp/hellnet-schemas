@@ -1,7 +1,8 @@
 {
-  "namespace": "fast.events.order.v1",
+  "namespace": "fast.order.requested",
   "type": "record",
-  "name": "FastOrderRequestedV1",
+  "name": "v1",
+  "aliases": ["fast.events.order.v1.FastOrderRequestedV1"],
   "doc": "Published when an order is requested in Fast.",
   "fields": [
     { "name": "eventId", "type": "string" },

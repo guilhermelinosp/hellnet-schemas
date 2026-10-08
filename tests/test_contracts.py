@@ -42,7 +42,8 @@ class ContractTests(unittest.TestCase):
         path = self.generate(name="fast-driver-location-updated")
         self.assertEqual(path.relative_to(self.root).as_posix(), "avro/fast/driver/location-updated/v1/schema.avsc")
         schema, metadata = c.read_json(path), c.read_json(path.parent / ".meta.json")
-        self.assertEqual(schema["name"], "FastDriverLocationUpdatedV1")
+        self.assertEqual(schema["name"], "v1")
+        self.assertEqual(schema["namespace"], "fast.driver.location.updated")
         self.assertEqual(metadata["name"], "fast.driver.location.updated.v1")
         self.assertEqual(metadata["type"], "avro")
 

@@ -48,10 +48,6 @@ def dump_json(value):
     return json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
 
 
-def pascal(value):
-    return "".join(word[:1].upper() + word[1:] for word in re.split("[-_]", value))
-
-
 def valid_avro_default(schema, value):
     kind = schema.type
     if kind == "null": return value is None
@@ -116,7 +112,7 @@ def validate_contract(directory, root):
         require(bool(re.fullmatch(r"[a-z0-9]+", domain)), "invalid Fast domain")
         require(bool(re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", event)), "invalid Fast event")
         require(name == f"fast.{domain}.{event.replace('-', '.')}.v{version}", "invalid Fast metadata name")
-        require(parsed.fullname == f"fast.events.{domain}.v{version}.Fast{pascal(domain + '-' + event)}V{version}", "invalid Fast Avro fullname")
+        require(parsed.fullname == name, "Fast Avro record fullname must equal the schema name")
     else:
         require(len(parts) == 3 and bool(re.fullmatch(NAME, parts[1])), "invalid generic Avro contract path")
         require(name == parts[1], "metadata name must match contract directory")
@@ -189,7 +185,7 @@ def generate(body, root=Path("schemas")):
     versions = [int(path.name[1:]) for path in parent.glob("v*") if re.fullmatch(r"v[1-9][0-9]*", path.name)]
     version = max(versions, default=0) + 1
     directory = parent / f"v{version}"
-    schema = {"type": "record", "name": f"Fast{pascal(domain + '-' + event)}V{version}", "namespace": f"fast.events.{domain}.v{version}", "fields": []}
+    schema = {"type": "record", "name": f"v{version}", "namespace": f"fast.{domain}.{event.replace('-', '.')}", "fields": []}
     for field in fields:
         ftype, default = field["type"], field.get("default")
         if not field.get("required", True): ftype = ["null", ftype] if default is None else [ftype, "null"]

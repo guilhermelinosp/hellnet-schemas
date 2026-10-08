@@ -69,8 +69,8 @@ Example Avro fields:
    retires the legacy `schemas/json` and `schemas/protobuf` trees. CI compares all
    remaining contents against the PR base SHA.
 2. Fast Avro preserves `fast/{domain}/{event}/vN`, metadata/topic/subject
-   `fast.{domain}.{event-as-dots}.vN`, namespace `fast.events.{domain}.vN` and
-   record `Fast{Domain}{Event}VN`. A new N is a separate identity. CI prints
+   `fast.{domain}.{event-as-dots}.vN`, namespace `fast.{domain}.{event-as-dots}` and
+   record `vN` (so the record's full name equals the schema name). A new N is a separate identity. CI prints
    `NEW IDENTITY`, not a misleading cross-version compatibility success. Producers
    and consumers must explicitly migrate to the new topic/contract.
 3. Avro versions keep their metadata name across directory versions. The **new version's** metadata selects BACKWARD, FORWARD, FULL or

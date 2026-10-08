@@ -131,8 +131,8 @@ Fast Avro contracts follow one canonical mapping:
 Issue schema name: fast-{domain}-{event}
 Repository path:   schemas/avro/fast/{domain}/{event}/v{version}
 Metadata name:     fast.{domain}.{event-as-dots}.v{version}
-Avro namespace:    fast.events.{domain}.v{version}
-Avro record:       Fast{Domain}{Event}V{version}
+Avro namespace:    fast.{domain}.{event-as-dots}
+Avro record name:  v{version}   (namespace + name == metadata name == Registry subject)
 ```
 
 Examples:
@@ -141,17 +141,15 @@ Examples:
 fast-order-requested
 → schemas/avro/fast/order/requested/v1
 → fast.order.requested.v1
-→ fast.events.order.v1
-→ FastOrderRequestedV1
+→ namespace fast.order.requested, record v1
 
 fast-driver-location-updated
 → schemas/avro/fast/driver/location-updated/v1
 → fast.driver.location.updated.v1
-→ fast.events.driver.v1
-→ FastDriverLocationUpdatedV1
+→ namespace fast.driver.location.updated, record v1
 ```
 
-The validator enforces these relationships, so a PR cannot place a Fast Avro contract in a flat `schemas/avro/fast-*` directory.
+The record's full name equals the schema name on purpose: the broker validates messages with Redpanda's `RecordNameStrategy`, which resolves the Registry subject from the record's full name. The validator enforces these relationships, so a PR cannot place a Fast Avro contract in a flat `schemas/avro/fast-*` directory.
 
 ## Git tags
 
