@@ -15,13 +15,13 @@ permissions:
 
 jobs:
   merge-check:
-    uses: guilhermelinosp/templates/.github/workflows/merge-check.yml@fee0159b62f093b823407e01b52fc439607e2264
+    uses: guilhermelinosp/templates/.github/workflows/merge-check.yml@ad5e76e437be0eb61d08d4ca08a5c578869e8474
 
   gitleaks:
-    uses: guilhermelinosp/templates/.github/workflows/gitleaks.yml@fee0159b62f093b823407e01b52fc439607e2264
+    uses: guilhermelinosp/templates/.github/workflows/gitleaks.yml@ad5e76e437be0eb61d08d4ca08a5c578869e8474
 
   policy:
-    uses: guilhermelinosp/templates/.github/workflows/pr-policy.yml@fee0159b62f093b823407e01b52fc439607e2264
+    uses: guilhermelinosp/templates/.github/workflows/pr-policy.yml@ad5e76e437be0eb61d08d4ca08a5c578869e8474
 
   pr-gate:
     if: always()
