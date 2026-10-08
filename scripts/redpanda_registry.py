@@ -14,6 +14,9 @@ from pathlib import Path
 from contracts import FILES, MODES, confined_path, read_json, require, validate_tree
 
 CONTENT_TYPE = "application/vnd.schemaregistry.v1+json"
+# The br.com.hellnet. prefix belongs to topics only. Each contract is registered as its own subject (catalog) and as
+# <topic>-value (TopicNameStrategy), the subject hellnet-lib-kafka and broker-side validation look up for a topic.
+TOPIC_PREFIX = "br.com.hellnet."
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -42,7 +45,9 @@ def contracts(root):
         meta = read_json(confined_path(meta_path, root))
         require(meta.get("type") == "avro" and meta.get("compatibility") in MODES, f"invalid metadata: {meta_path}")
         schema = read_json(confined_path(meta_path.parent / FILES["avro"], root))
-        yield meta["name"], meta["compatibility"], json.dumps(schema, separators=(",", ":"))
+        document = json.dumps(schema, separators=(",", ":"))
+        for subject in (meta["name"], f"{TOPIC_PREFIX}{meta['name']}-value"):
+            yield subject, meta["compatibility"], document
 
 
 def sync(registry, root, apply):

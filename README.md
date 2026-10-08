@@ -208,7 +208,9 @@ schemas, subjects and Avro namespaces never carry it.
 
 Fast Avro directories follow `fast/{domain}/{event}/v{version}`; event segments joined by hyphens become dots in the
 subject. Registration is idempotent: the same schema submitted to the same subject is deduplicated by the registry.
-Topics are created in the cluster (`redpanda-topics.sh`), not by CI.
+Each contract is registered twice from the same file: as `fast.order.<event>.v1` (catalog) and as
+`br.com.hellnet.fast.order.<event>.v1-value` (the topic's subject under TopicNameStrategy, which `hellnet-lib-kafka` and
+broker-side schema validation look up). Topics are created in the cluster (`redpanda-topics.sh`), not by CI.
 
 ## CI/CD
 
