@@ -1,13 +1,13 @@
 {
-  "namespace": "br.com.hellnet.fast.events.ride.v1",
+  "namespace": "br.com.hellnet.fast.events.order.v1",
   "type": "record",
-  "name": "FastRideAcceptedV1",
-  "doc": "Published when a driver accepts a ride in Fast.",
+  "name": "FastOrderAcceptedV1",
+  "doc": "Published when a driver accepts an order in Fast.",
   "fields": [
     { "name": "eventId", "type": "string" },
     { "name": "eventVersion", "type": "int", "default": 1 },
     { "name": "occurredAt", "type": "long" },
-    { "name": "rideId", "type": "string" },
+    { "name": "orderId", "type": "string" },
     { "name": "driverId", "type": "string" }
   ]
 }

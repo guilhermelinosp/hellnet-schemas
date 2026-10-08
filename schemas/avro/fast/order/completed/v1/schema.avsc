@@ -1,8 +1,8 @@
 {
-  "namespace": "br.com.hellnet.fast.events.ride.v1",
+  "namespace": "br.com.hellnet.fast.events.order.v1",
   "type": "record",
-  "name": "FastRideCompletedV1",
-  "doc": "Published when a ride is completed in Fast.",
+  "name": "FastOrderCompletedV1",
+  "doc": "Published when an order is completed in Fast.",
   "fields": [
     {
       "name": "eventId",
@@ -18,7 +18,7 @@
       "type": "long"
     },
     {
-      "name": "rideId",
+      "name": "orderId",
       "type": "string"
     },
     {

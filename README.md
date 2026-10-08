@@ -89,9 +89,9 @@ schemas/
 Example:
 
 ```text
-schemas/avro/fast/ride/requested/v1/schema.avsc
-schemas/avro/fast/ride/accepted/v1/schema.avsc
-schemas/avro/fast/ride/completed/v1/schema.avsc
+schemas/avro/fast/order/requested/v1/schema.avsc
+schemas/avro/fast/order/accepted/v1/schema.avsc
+schemas/avro/fast/order/completed/v1/schema.avsc
 ```
 
 Only Avro contracts are accepted. Every contract uses the Fast hierarchy above.
@@ -100,7 +100,7 @@ Only Avro contracts are accepted. Every contract uses the Fast hierarchy above.
 
 | Schema | Format | File |
 |--------|--------|------|
-| Ride Completed | Avro (Fast) | `schemas/avro/fast/ride/completed/v1/schema.avsc` |
+| Order Completed | Avro (Fast) | `schemas/avro/fast/order/completed/v1/schema.avsc` |
 
 ## Configuration
 
@@ -138,11 +138,11 @@ Avro record:       Fast{Domain}{Event}V{version}
 Examples:
 
 ```text
-fast-ride-requested
-→ schemas/avro/fast/ride/requested/v1
-→ br.com.hellnet.fast.ride.requested.v1
-→ br.com.hellnet.fast.events.ride.v1
-→ FastRideRequestedV1
+fast-order-requested
+→ schemas/avro/fast/order/requested/v1
+→ br.com.hellnet.fast.order.requested.v1
+→ br.com.hellnet.fast.events.order.v1
+→ FastOrderRequestedV1
 
 fast-driver-location-updated
 → schemas/avro/fast/driver/location-updated/v1
@@ -158,8 +158,8 @@ The validator enforces these relationships, so a PR cannot place a Fast Avro con
 Each merged schema version receives an immutable tag after it reaches `main`:
 
 ```
-schema/fast-ride-requested/v1
-schema/fast-ride-completed/v1
+schema/fast-order-requested/v1
+schema/fast-order-completed/v1
 schema/fast-driver-location-updated/v1
 ```
 
@@ -222,8 +222,8 @@ topics distinct:
 
 | Schema directory | Subject | Topic |
 |---|---|---|
-| `fast/ride/requested/v1` | `br.com.hellnet.fast.ride.requested.v1` | `br.com.hellnet.fast.ride.requested.v1` |
-| `fast/ride/accepted/v1` | `br.com.hellnet.fast.ride.accepted.v1` | `br.com.hellnet.fast.ride.accepted.v1` |
+| `fast/order/requested/v1` | `br.com.hellnet.fast.order.requested.v1` | `br.com.hellnet.fast.order.requested.v1` |
+| `fast/order/accepted/v1` | `br.com.hellnet.fast.order.accepted.v1` | `br.com.hellnet.fast.order.accepted.v1` |
 | `fast/driver/location-updated/v1` | `fast.driver.location.updated.v1` | `fast.driver.location.updated.v1` |
 
 Fast Avro directories follow `fast/{domain}/{event}/v{version}`. Event names may

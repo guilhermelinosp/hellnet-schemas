@@ -13,7 +13,7 @@ import evolution as e
 REPO = Path(__file__).resolve().parents[1]
 
 
-def issue(name="fast-ride-requested", kind="avro", fields="- name: id\n  type: string", mode="BACKWARD"):
+def issue(name="fast-order-requested", kind="avro", fields="- name: id\n  type: string", mode="BACKWARD"):
     return (f"### Schema name\n\n{name}\n\n### Format\n\n{kind}\n\n"
             f"### Compatibility level\n\n{mode}\n\n### Fields (YAML)\n\n```yaml\n{fields}\n```\n")
 
@@ -54,7 +54,7 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(field["doc"], "Optional note")
 
     def test_invalid_issue_never_writes_version(self):
-        for body in (issue(name="fast-ride--created"), issue(name="hellnet-event"), issue(fields="[]"), issue(fields="- name: id\n  type: string\n  unknown: true")):
+        for body in (issue(name="fast-order--created"), issue(name="hellnet-event"), issue(fields="[]"), issue(fields="- name: id\n  type: string\n  unknown: true")):
             with self.assertRaises(Exception): c.generate(body, self.root)
             self.assertFalse(list(self.root.rglob(".meta.json")))
 
@@ -72,7 +72,7 @@ class ContractTests(unittest.TestCase):
     def test_versions_and_evolution(self):
         self.generate(); self.generate()
         c.validate_tree(self.root); e.check_evolution(self.root)
-        shutil.rmtree(self.root / "avro/fast/ride/requested/v1")
+        shutil.rmtree(self.root / "avro/fast/order/requested/v1")
         with self.assertRaisesRegex(ValueError, "without gaps"):
             e.check_evolution(self.root)
 
