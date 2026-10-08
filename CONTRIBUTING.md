@@ -107,15 +107,8 @@ that the Registry or production consumers work; validate those separately.
 
 ## Registry boundary
 
-`check-compatibility.sh` uses Apicurio v2 GET of the artifact compatibility rule,
-then its non-mutating **PUT `/test`** endpoint. The artifact must exist and have a
-rule matching metadata. It refuses redirects and reports missing artifacts/rules,
-authorization errors and violations as failures, never as successful checks.
-It intentionally does not infer global rule inheritance or configure policies.
-
-`register.sh` and `register-redpanda.sh --apply` are explicit remote writes. Do not
-invoke them as part of ordinary local validation or a PR test. Redpanda defaults
-to dry-run; creating topics additionally requires `--create-topics`.
+`scripts/redpanda_registry.py check` is read-only: it asks the Redpanda Registry whether each schema is compatible
+with the latest registered version and never writes. `apply` (registration and subject compatibility) runs only from
+`sync-registry.yml` on `main`; do not run it as part of ordinary local validation or a PR test.
 
 References: [Apache Avro specification](https://avro.apache.org/docs/1.12.0/specification/),
-[Apicurio v2 API](https://www.apicur.io/registry/docs/apicurio-registry/2.6.x/assets-attachments/registry-rest-api.htm).

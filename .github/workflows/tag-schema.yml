@@ -23,6 +23,8 @@ jobs:
           fetch-depth: 0
           token: ${{ github.token }}
 
+      - uses: ./.github/actions/setup-schema-tools
+
       - name: Validate contracts before tagging
         run: bash scripts/validate.sh schemas
 

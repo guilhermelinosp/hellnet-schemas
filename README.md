@@ -105,8 +105,7 @@ Only Avro contracts are accepted. Every contract uses the Fast hierarchy above.
 ## Configuration
 
 No GitHub App settings are required. No Registry credentials are needed for
-generation, tests or CI. Manual Apicurio operations accept
-`--registry "$APICURIO_URL"` and optional `APICURIO_TOKEN` in the local environment.
+generation, tests or CI. The Redpanda Schema Registry sync runs in CI (see below).
 
 ### Compatibility levels
 
@@ -189,19 +188,10 @@ Use Python 3.11 or newer. Validation works offline after dependency installation
 See [contribution instructions](CONTRIBUTING.md) for Avro field types and safe
 Issue retries.
 
-### Register schema manually
+### Register schemas
 
-```bash
-./scripts/register.sh \
-  --registry "$APICURIO_URL" \
-  --group default \
-  --schema schemas/avro/fast/ride/requested/v1
-```
-
-`scripts/check-compatibility.sh` performs a non-mutating Apicurio v2 rule test.
-It requires an existing artifact with an explicit compatibility rule matching
-metadata; missing/mismatched rules and authorization failures stop the check.
-It never creates an artifact or updates a rule. Registration is a separate write.
+Registration happens in CI on merge to `main` (`sync-registry.yml`). For a read-only local test against the
+Registry, run `python3 scripts/redpanda_registry.py check --registry https://schema.hellnet.com.br` (needs the tailnet).
 
 ### Redpanda Schema Registry
 
