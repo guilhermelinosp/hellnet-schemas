@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "FastRideCancelledV1",
-  "namespace": "fast.events.ride.v1",
+  "namespace": "br.com.hellnet.fast.events.ride.v1",
   "fields": [
     {
       "name": "eventId",

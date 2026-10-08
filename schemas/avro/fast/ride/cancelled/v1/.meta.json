@@ -1,5 +1,5 @@
 {
-  "name": "fast.ride.cancelled.v1",
+  "name": "br.com.hellnet.fast.ride.cancelled.v1",
   "type": "avro",
   "version": 1,
   "compatibility": "BACKWARD",

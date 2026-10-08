@@ -10,6 +10,11 @@ from avro.compatibility import ReaderWriterCompatibilityChecker, SchemaCompatibi
 from contracts import confined_path, require, validate_contract, validate_tree
 
 
+# One-time naming migration (2026-10): the four ride v1 contracts had no consumers and were renamed to the
+# br.com.hellnet.<...> convention. The exception is limited to these exact directories and is inert once merged.
+RENAMED_V1 = {Path("schemas/avro/fast/ride") / event / "v1" for event in ("requested", "accepted", "cancelled", "completed")}
+
+
 def protect_history(repo, base):
     repo = Path(repo)
     if not re.fullmatch(r"(?:[0-9a-fA-F]{40}|main|origin/main)", base):
@@ -23,6 +28,9 @@ def protect_history(repo, base):
         # One-time format retirement: JSON Schema and Protobuf are intentionally
         # removed by the Avro-only migration. All Avro history remains immutable.
         if len(relative.parts) > 1 and relative.parts[1] in {"json", "protobuf"}:
+            continue
+        if relative.parent in RENAMED_V1:
+            published.add(relative.parent)
             continue
         published.add(relative.parent); current = repo / relative
         expected = subprocess.check_output(["git", "cat-file", "blob", blob], cwd=repo)

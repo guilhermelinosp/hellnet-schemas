@@ -1,5 +1,5 @@
 {
-  "namespace": "fast.events.ride.v1",
+  "namespace": "br.com.hellnet.fast.events.ride.v1",
   "type": "record",
   "name": "FastRideRequestedV1",
   "doc": "Published when a ride is requested in Fast.",

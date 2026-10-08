@@ -138,7 +138,7 @@ Fast Avro contracts follow one canonical mapping:
 Issue schema name: fast-{domain}-{event}
 Repository path:   schemas/avro/fast/{domain}/{event}/v{version}
 Metadata name:     fast.{domain}.{event-as-dots}.v{version}
-Avro namespace:    fast.events.{domain}.v{version}
+Avro namespace:    br.com.hellnet.fast.events.{domain}.v{version}
 Avro record:       Fast{Domain}{Event}V{version}
 ```
 
@@ -147,14 +147,14 @@ Examples:
 ```text
 fast-ride-requested
 → schemas/avro/fast/ride/requested/v1
-→ fast.ride.requested.v1
-→ fast.events.ride.v1
+→ br.com.hellnet.fast.ride.requested.v1
+→ br.com.hellnet.fast.events.ride.v1
 → FastRideRequestedV1
 
 fast-driver-location-updated
 → schemas/avro/fast/driver/location-updated/v1
 → fast.driver.location.updated.v1
-→ fast.events.driver.v1
+→ br.com.hellnet.fast.events.driver.v1
 → FastDriverLocationUpdatedV1
 ```
 
@@ -238,8 +238,8 @@ topics distinct:
 
 | Schema directory | Subject | Topic |
 |---|---|---|
-| `fast/ride/requested/v1` | `fast.ride.requested.v1` | `fast.ride.requested.v1` |
-| `fast/ride/accepted/v1` | `fast.ride.accepted.v1` | `fast.ride.accepted.v1` |
+| `fast/ride/requested/v1` | `br.com.hellnet.fast.ride.requested.v1` | `br.com.hellnet.fast.ride.requested.v1` |
+| `fast/ride/accepted/v1` | `br.com.hellnet.fast.ride.accepted.v1` | `br.com.hellnet.fast.ride.accepted.v1` |
 | `fast/driver/location-updated/v1` | `fast.driver.location.updated.v1` | `fast.driver.location.updated.v1` |
 
 Fast Avro directories follow `fast/{domain}/{event}/v{version}`. Event names may

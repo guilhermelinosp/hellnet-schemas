@@ -115,8 +115,8 @@ def validate_contract(directory, root):
         domain, event = parts[2:4]
         require(bool(re.fullmatch(r"[a-z0-9]+", domain)), "invalid Fast domain")
         require(bool(re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", event)), "invalid Fast event")
-        require(name == f"fast.{domain}.{event.replace('-', '.')}.v{version}", "invalid Fast metadata name")
-        require(parsed.fullname == f"fast.events.{domain}.v{version}.Fast{pascal(domain + '-' + event)}V{version}", "invalid Fast Avro fullname")
+        require(name == f"br.com.hellnet.fast.{domain}.{event.replace('-', '.')}.v{version}", "invalid Fast metadata name")
+        require(parsed.fullname == f"br.com.hellnet.fast.events.{domain}.v{version}.Fast{pascal(domain + '-' + event)}V{version}", "invalid Fast Avro fullname")
     else:
         require(len(parts) == 3 and bool(re.fullmatch(NAME, parts[1])), "invalid generic Avro contract path")
         require(name == parts[1], "metadata name must match contract directory")
@@ -189,7 +189,7 @@ def generate(body, root=Path("schemas")):
     versions = [int(path.name[1:]) for path in parent.glob("v*") if re.fullmatch(r"v[1-9][0-9]*", path.name)]
     version = max(versions, default=0) + 1
     directory = parent / f"v{version}"
-    schema = {"type": "record", "name": f"Fast{pascal(domain + '-' + event)}V{version}", "namespace": f"fast.events.{domain}.v{version}", "fields": []}
+    schema = {"type": "record", "name": f"Fast{pascal(domain + '-' + event)}V{version}", "namespace": f"br.com.hellnet.fast.events.{domain}.v{version}", "fields": []}
     for field in fields:
         ftype, default = field["type"], field.get("default")
         if not field.get("required", True): ftype = ["null", ftype] if default is None else [ftype, "null"]
@@ -200,7 +200,7 @@ def generate(body, root=Path("schemas")):
     with tempfile.TemporaryDirectory(prefix="schema-generate-") as tmp:
         staging = Path(tmp) / relative / f"v{version}"; staging.mkdir(parents=True)
         (staging / "schema.avsc").write_text(dump_json(schema))
-        (staging / ".meta.json").write_text(dump_json({"name": f"fast.{domain}.{event.replace('-', '.')}.v{version}", "type": "avro", "version": version, "compatibility": mode, "createdAt": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z")}))
+        (staging / ".meta.json").write_text(dump_json({"name": f"br.com.hellnet.fast.{domain}.{event.replace('-', '.')}.v{version}", "type": "avro", "version": version, "compatibility": mode, "createdAt": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z")}))
         validate_contract(staging, Path(tmp)); parent.mkdir(parents=True, exist_ok=True)
         require(not directory.exists(), f"version already exists: {directory}"); shutil.copytree(staging, directory)
     return {"NAME": name, "TYPE": kind, "VERSION": str(version), "PATH": str(directory / "schema.avsc")}
