@@ -1,5 +1,5 @@
 {
-  "name": "br.com.hellnet.fast.order.accepted.v1",
+  "name": "fast.order.accepted.v1",
   "type": "avro",
   "version": 1,
   "compatibility": "BACKWARD",
