@@ -1,7 +1,8 @@
 {
-  "namespace": "fast.events.order.v1",
+  "namespace": "fast.order.accepted",
   "type": "record",
-  "name": "FastOrderAcceptedV1",
+  "name": "v1",
+  "aliases": ["fast.events.order.v1.FastOrderAcceptedV1"],
   "doc": "Published when a driver accepts an order in Fast.",
   "fields": [
     { "name": "eventId", "type": "string" },

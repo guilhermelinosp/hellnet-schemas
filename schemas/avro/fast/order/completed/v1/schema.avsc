@@ -1,7 +1,8 @@
 {
-  "namespace": "fast.events.order.v1",
+  "namespace": "fast.order.completed",
   "type": "record",
-  "name": "FastOrderCompletedV1",
+  "name": "v1",
+  "aliases": ["fast.events.order.v1.FastOrderCompletedV1"],
   "doc": "Published when an order is completed in Fast.",
   "fields": [
     {

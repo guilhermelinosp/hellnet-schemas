@@ -58,13 +58,14 @@ class RegistryTests(unittest.TestCase):
     def test_check_rejects_incompatible_schema(self):
         Fake.subjects["fast.order.requested.v1"] = {}
         Fake.compatible = False
-        with self.assertRaisesRegex(ValueError, "not BACKWARD-compatible"):
+        with self.assertRaisesRegex(ValueError, "is not [A-Z]+-compatible"):
             r.sync(self.url, SCHEMAS, apply=False)
 
     def test_apply_sets_compatibility_and_registers_every_contract(self):
         r.sync(self.url, SCHEMAS, apply=True)
         self.assertEqual(set(Fake.subjects), {f"fast.order.{e}.v1" for e in ("requested", "accepted", "cancelled", "completed")})
-        self.assertEqual(set(Fake.configs.values()), {"BACKWARD"})
+        declared = {json.loads(m.read_text())["compatibility"] for m in SCHEMAS.glob("**/v*/.meta.json")}
+        self.assertEqual(set(Fake.configs.values()), declared)
         self.assertEqual(Fake.subjects["fast.order.requested.v1"]["schemaType"], "AVRO")
 
     def test_rejects_credentials_in_url(self):
