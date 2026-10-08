@@ -11,21 +11,27 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  id-token: write
   checks: write # merge-check (reusable) reports a check run; without it the workflow fails at startup
 
 jobs:
   merge-check:
-    uses: guilhermelinosp/templates/.github/workflows/merge-check.yml@ad5e76e437be0eb61d08d4ca08a5c578869e8474
+    uses: guilhermelinosp/templates/.github/workflows/merge-check.yml@latest
 
   gitleaks:
-    uses: guilhermelinosp/templates/.github/workflows/gitleaks.yml@ad5e76e437be0eb61d08d4ca08a5c578869e8474
+    uses: guilhermelinosp/templates/.github/workflows/gitleaks.yml@latest
 
   policy:
-    uses: guilhermelinosp/templates/.github/workflows/pr-policy.yml@ad5e76e437be0eb61d08d4ca08a5c578869e8474
+    uses: guilhermelinosp/templates/.github/workflows/pr-policy.yml@latest
+
+  registry:
+    uses: guilhermelinosp/templates/.github/workflows/schema-sync.yml@latest
+    with:
+      mode: check
 
   pr-gate:
     if: always()
-    needs: [merge-check, gitleaks, policy]
+    needs: [merge-check, gitleaks, policy, registry]
     runs-on: ubuntu-latest
     steps:
       - name: gate

@@ -29,6 +29,15 @@ Dev ──abre issue──► Issue Template ──Issue event──► Gera sch
 6. Ao merge na `main`, `tag-schema.yml` cria a tag imutável `schema/{nome}/v{versao}`
 7. A sincronização com um Schema Registry é feita separadamente, pelo processo de registro correspondente
 
+## Redpanda Schema Registry sync
+
+PRs run a read-only compatibility test (`registry` job, part of `pr-gate`); merges to `main` set the subject
+compatibility and register every schema (`sync-registry.yml`). Tailscale lives only in `templates`: both workflows call
+`templates/.github/workflows/schema-sync.yml`, which triggers the `schema-registry.yml` hub (OIDC, `tag:github`,
+ACL `192.168.1.2:443`). This repository holds no Tailscale variable or secret.
+
+Local run: `python3 scripts/redpanda_registry.py check --registry https://schema.hellnet.com.br`.
+
 ## Quick start
 
 ### Creating a new schema
@@ -123,7 +132,7 @@ Fast Avro contracts follow one canonical mapping:
 Issue schema name: fast-{domain}-{event}
 Repository path:   schemas/avro/fast/{domain}/{event}/v{version}
 Metadata name:     fast.{domain}.{event-as-dots}.v{version}
-Avro namespace:    fast.events.{domain}.v{version}
+Avro namespace:    br.com.hellnet.fast.events.{domain}.v{version}
 Avro record:       Fast{Domain}{Event}V{version}
 ```
 
@@ -132,14 +141,14 @@ Examples:
 ```text
 fast-ride-requested
 → schemas/avro/fast/ride/requested/v1
-→ fast.ride.requested.v1
-→ fast.events.ride.v1
+→ br.com.hellnet.fast.ride.requested.v1
+→ br.com.hellnet.fast.events.ride.v1
 → FastRideRequestedV1
 
 fast-driver-location-updated
 → schemas/avro/fast/driver/location-updated/v1
 → fast.driver.location.updated.v1
-→ fast.events.driver.v1
+→ br.com.hellnet.fast.events.driver.v1
 → FastDriverLocationUpdatedV1
 ```
 
@@ -223,8 +232,8 @@ topics distinct:
 
 | Schema directory | Subject | Topic |
 |---|---|---|
-| `fast/ride/requested/v1` | `fast.ride.requested.v1` | `fast.ride.requested.v1` |
-| `fast/ride/accepted/v1` | `fast.ride.accepted.v1` | `fast.ride.accepted.v1` |
+| `fast/ride/requested/v1` | `br.com.hellnet.fast.ride.requested.v1` | `br.com.hellnet.fast.ride.requested.v1` |
+| `fast/ride/accepted/v1` | `br.com.hellnet.fast.ride.accepted.v1` | `br.com.hellnet.fast.ride.accepted.v1` |
 | `fast/driver/location-updated/v1` | `fast.driver.location.updated.v1` | `fast.driver.location.updated.v1` |
 
 Fast Avro directories follow `fast/{domain}/{event}/v{version}`. Event names may

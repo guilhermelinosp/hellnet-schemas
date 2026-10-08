@@ -1,0 +1,23 @@
+name: sync-registry
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "schemas/**"
+      - "scripts/redpanda_registry.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: registry-sync
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    uses: guilhermelinosp/templates/.github/workflows/schema-sync.yml@latest
+    with:
+      mode: apply
